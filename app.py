@@ -1,3 +1,4 @@
+import uuid  
 import os
 from flask import Flask, request, jsonify, render_template
 from flask_socketio import SocketIO
@@ -13,6 +14,9 @@ bot = Bot(TELEGRAM_TOKEN)
 # In-memory storage (replace with DB later)
 active_duels = {}
 users = {}
+@app.route('/')
+def home():
+    return "Gladiator Bot Running 🛡️⚔️"
 
 class Duel:
     def __init__(self, duel_id):
@@ -24,11 +28,11 @@ class Duel:
 def webhook():
     update = Update.de_json(request.get_json(), bot)
     if update.message and '/start' in update.message.text:
-        duel_id = str(uuid.uuid4())
+        duel_id = str(uuid.uuid4())  # Now works with uuid imported
         active_duels[duel_id] = Duel(duel_id)
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"⚔️ Join duel: https://your-app-url.herokuapp.com/arena?id={duel_id}"
+            text=f"⚔️ Join duel: {YOUR_RENDER_URL}/arena?id={duel_id}"
         )
     return 'OK'
 
@@ -65,6 +69,10 @@ def handle_attack(data):
                 socketio.emit('winner', {'winner': attacker_id}, room=duel_id)
     
     socketio.emit('update', duel.players, room=duel_id)
+
+@app.route('/')
+def home():
+    return "Gladiator Bot Running 🛡️⚔️"    
 
 if __name__ == '__main__':
     socketio.run(app)
