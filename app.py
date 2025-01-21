@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', 'YOUR_BOT_TOKEN')
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')
 bot = Bot(TELEGRAM_TOKEN)
 
 # In-memory storage (replace with DB later)
@@ -34,7 +34,7 @@ def webhook():
         # Replace YOUR_RENDER_URL with your actual domain
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"⚔️ Join duel: https://your-domain.com/arena?id={duel_id}"
+            text=f"⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={duel_id}"
         )
     return 'OK'
 
