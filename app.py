@@ -14,9 +14,6 @@ bot = Bot(TELEGRAM_TOKEN)
 # In-memory storage (replace with DB later)
 active_duels = {}
 users = {}
-@app.route('/')
-def home():
-    return "Gladiator Bot Running 🛡️⚔️"
 
 class Duel:
     def __init__(self, duel_id):
@@ -24,15 +21,20 @@ class Duel:
         self.players = {}
         self.winner = None
 
+@app.route('/')
+def home():
+    return "Gladiator Bot Running 🛡️⚔️"
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     update = Update.de_json(request.get_json(), bot)
     if update.message and '/start' in update.message.text:
-        duel_id = str(uuid.uuid4())  # Now works with uuid imported
+        duel_id = str(uuid.uuid4())
         active_duels[duel_id] = Duel(duel_id)
+        # Replace YOUR_RENDER_URL with your actual domain
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"⚔️ Join duel: {YOUR_RENDER_URL}/arena?id={duel_id}"
+            text=f"⚔️ Join duel: https://your-domain.com/arena?id={duel_id}"
         )
     return 'OK'
 
@@ -69,10 +71,6 @@ def handle_attack(data):
                 socketio.emit('winner', {'winner': attacker_id}, room=duel_id)
     
     socketio.emit('update', duel.players, room=duel_id)
-
-@app.route('/')
-def home():
-    return "Gladiator Bot Running 🛡️⚔️"    
 
 if __name__ == '__main__':
     socketio.run(app)
