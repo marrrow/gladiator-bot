@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import uuid  
 import os
 from flask import Flask, request, jsonify, render_template
@@ -31,7 +32,6 @@ def webhook():
     if update.message and '/start' in update.message.text:
         duel_id = str(uuid.uuid4())
         active_duels[duel_id] = Duel(duel_id)
-        # Replace YOUR_RENDER_URL with your actual domain
         bot.send_message(
             chat_id=update.message.chat_id,
             text=f"⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={duel_id}"
