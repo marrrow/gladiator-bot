@@ -10,12 +10,18 @@ from telegram import Update, User, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from telegram.constants import ParseMode
 
+# Initialize Flask app
 app = Flask(__name__)
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')
-application = Application.builder().token(TELEGRAM_TOKEN).build()
+TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']  # Remove default value for security
 
-application.initialize()
-application.start()
+# Initialize Telegram Application with webhook setup
+async def post_init(application: Application):
+    await application.bot.set_webhook("https://gladiator-bot.onrender.com/webhook")
+
+application = Application.builder() \
+    .token(TELEGRAM_TOKEN) \
+    .post_init(post_init) \
+    .build()
 
 # In-memory storage
 active_fights = {}
@@ -285,7 +291,8 @@ application.add_handler(CallbackQueryHandler(tap_callback, pattern='^tap_'))
 async def webhook():
     """Handle incoming updates from Telegram"""
     if request.method == "POST":
-        await application.update_queue.put(Update.de_json(request.get_json(), application.bot))
+        update = Update.de_json(await request.get_json(), application.bot)
+        await application.process_update(update)
         return "ok"
     return "ok"
 
@@ -294,4 +301,8 @@ def home():
     return "Gladiator Bot Running 🏛️⚔️"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from hypercorn.asyncio import serve
+    from hypercorn.config import Config
+    config = Config()
+    config.bind = ["0.0.0.0:8000"]
+    asyncio.run(serve(app, config))
