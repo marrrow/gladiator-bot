@@ -291,7 +291,8 @@ application.add_handler(CallbackQueryHandler(tap_callback, pattern='^tap_'))
 async def webhook():
     """Handle incoming updates from Telegram"""
     if request.method == "POST":
-        update = Update.de_json(await request.get_json(), application.bot)
+        json_data = await request.get_json()
+        update = Update.de_json(json_data, application.bot)
         await application.process_update(update)
         return "ok"
     return "ok"

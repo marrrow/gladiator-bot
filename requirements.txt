@@ -1,7 +1,8 @@
+flask[async]==3.0.2  # Changed from flask==3.0.2
 python-telegram-bot==20.6
-flask==3.0.2
 flask-socketio==5.3.6
 gunicorn==21.2.0
 hypercorn==0.14.4
 aiohttp==3.9.1
 python-dotenv==1.0.0
+gevent==24.2.1
