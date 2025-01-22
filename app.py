@@ -12,7 +12,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')
 bot = Bot(TELEGRAM_TOKEN)
 
-# In-memory storage (replace with DB later)
+# In-memory storage
 active_duels = {}
 users = {}
 
@@ -34,7 +34,7 @@ def webhook():
         active_duels[duel_id] = Duel(duel_id)
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={duel_id}"
+            text="⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={}".format(duel_id)
         )
     return 'OK'
 
