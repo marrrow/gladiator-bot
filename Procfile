@@ -1,2 +1,2 @@
 web: gunicorn app:app
-bot: python -m app
+bot: python webhook.py

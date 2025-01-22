@@ -1,11 +1,11 @@
 from app import application
-import os
+import asyncio
 
-async def set_webhook():
+async def main():
+    await application.start()
     await application.bot.set_webhook(
-        url="https://gladiator-bot.onrender.com/webhook"
+        "https://gladiator-bot.onrender.com/webhook"
     )
 
 if __name__ == '__main__':
-    import asyncio
-    asyncio.run(set_webhook())
+    asyncio.run(main())
