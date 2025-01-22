@@ -4,13 +4,15 @@ import os
 from flask import Flask, request, jsonify, render_template
 from flask_socketio import SocketIO
 from telegram import Bot, Update
+from telegram.ext import Dispatcher, CommandHandler  # Added
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', 'YOUR_NEW_TOKEN')  # Replace with new token
 bot = Bot(TELEGRAM_TOKEN)
+dispatcher = Dispatcher(bot, None)  # Added
 
 # In-memory storage
 active_duels = {}
@@ -22,6 +24,15 @@ class Duel:
         self.players = {}
         self.winner = None
 
+def start_command(update, context):  # Added
+    duel_id = str(uuid.uuid4())
+    active_duels[duel_id] = Duel(duel_id)
+    update.message.reply_text(
+        f"⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={duel_id}"
+    )
+
+dispatcher.add_handler(CommandHandler('start', start_command))  # Added
+
 @app.route('/')
 def home():
     return "Gladiator Bot Running 🛡️⚔️"
@@ -29,13 +40,7 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     update = Update.de_json(request.get_json(), bot)
-    if update.message and '/start' in update.message.text:
-        duel_id = str(uuid.uuid4())
-        active_duels[duel_id] = Duel(duel_id)
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text="⚔️ Join duel: https://gladiator-bot.onrender.com/arena?id={}".format(duel_id)
-        )
+    dispatcher.process_update(update)  # Added
     return 'OK'
 
 @app.route('/arena')
