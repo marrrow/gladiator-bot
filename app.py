@@ -5,7 +5,7 @@ import asyncio
 import random
 from datetime import datetime, timedelta
 from collections import defaultdict
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from telegram import Update, User, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 from telegram.constants import ParseMode
@@ -289,15 +289,20 @@ application.add_handler(CallbackQueryHandler(tap_callback, pattern='^tap_'))
 
 @app.route('/webhook', methods=['POST'])
 async def webhook():
-    """Handle incoming updates from Telegram"""
+    """Handle incoming Telegram updates"""
     try:
-        json_data = await request.get_json()
+        # Get JSON data synchronously (no await needed)
+        json_data = request.get_json()
+        
+        # Process update
         update = Update.de_json(json_data, application.bot)
-        await application.update_queue.put(update)
+        await application.process_update(update)
         return jsonify({"status": "ok"}), 200
+        
     except Exception as e:
-        print(f"🔥 Critical Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        error_msg = f"Error: {str(e)}"
+        print(error_msg)
+        return jsonify({"error": error_msg}), 500
 
 @app.route('/')
 def home():
