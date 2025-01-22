@@ -14,6 +14,9 @@ app = Flask(__name__)
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')
 application = Application.builder().token(TELEGRAM_TOKEN).build()
 
+application.initialize()
+application.start()
+
 # In-memory storage
 active_fights = {}
 user_stats = defaultdict(lambda: {"wins": 0, "losses": 0, "rank": "Recruit", "glory": 0})
@@ -279,10 +282,12 @@ application.add_handler(CallbackQueryHandler(accept_fight_callback, pattern='^ac
 application.add_handler(CallbackQueryHandler(tap_callback, pattern='^tap_'))
 
 @app.route('/webhook', methods=['POST'])
-def webhook():
-    update = Update.de_json(request.get_json(), application.bot)
-    application.update_queue.put(update)
-    return 'OK'
+async def webhook():
+    """Handle incoming updates from Telegram"""
+    if request.method == "POST":
+        await application.update_queue.put(Update.de_json(request.get_json(), application.bot))
+        return "ok"
+    return "ok"
 
 @app.route('/')
 def home():
