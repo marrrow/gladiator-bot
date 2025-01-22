@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', 'YOUR_NEW_TOKEN')  # Replace with new token
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '7724210900:AAG6AVzHbIQXXWGufSKxeEWkrmBzW-PiB20')  # Replace with new token
 bot = Bot(TELEGRAM_TOKEN)
 dispatcher = Dispatcher(bot, None)  # Added
 
