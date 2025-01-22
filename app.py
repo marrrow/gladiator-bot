@@ -291,10 +291,14 @@ application.add_handler(CallbackQueryHandler(tap_callback, pattern='^tap_'))
 async def webhook():
     """Handle incoming updates from Telegram"""
     if request.method == "POST":
-        json_data = await request.get_json()
-        update = Update.de_json(json_data, application.bot)
-        await application.process_update(update)
-        return "ok"
+        try:
+            json_data = await request.get_json()
+            update = Update.de_json(json_data, application.bot)
+            await application.process_update(update)
+            return "ok"
+        except Exception as e:
+            print(f"Webhook error: {str(e)}")
+            return "error", 500
     return "ok"
 
 @app.route('/')

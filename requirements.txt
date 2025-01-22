@@ -6,3 +6,5 @@ hypercorn==0.14.4
 aiohttp==3.9.1
 python-dotenv==1.0.0
 gevent==24.2.1
+flask[async]==3.0.2
+greenlet==3.0.3  # Required for gevent
